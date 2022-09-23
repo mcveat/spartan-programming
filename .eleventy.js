@@ -1,6 +1,7 @@
 module.exports = function(eleventyConfig) {
-  eleventyConfig.addShortcode("page", function(name) {
-    return `<a href="pages/${name}">${name}</a>`;
+  eleventyConfig.addShortcode("page", function(slug, name) {
+    var slugOrName = name ? name : slug;
+    return `<a href="pages/${slug}">${slugOrName}</a>`;
   });
   eleventyConfig.addPassthroughCopy('css');
   return {

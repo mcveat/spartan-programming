@@ -1,0 +1,38 @@
+---
+layout: page.njk
+title: Spartan programming - Horizontal complexity
+---
+
+<h1>Horizontal complexity</h1>
+
+<p>The horizontal complexity of source code pertains to both line length and to control nesting level. The Spartan programming methodology dictates minimization of horizontal complexity, and even place this objective higher than any other complexity metric minimization objective. This is because it is believed that horizontal scrolling is even more intellectually demanding then vertical scrolling. Further, it is believed that deep nested control is difficult to understand.</p>
+
+<p>Specific techniques for reducing horizontal complexity include:</p>
+
+<ol>
+  <li>Setting a fixed limit to line length. Traditionally, this limit is 80 characters. Longer lines are manually inspected in search for simplification opportunities. Lines are broken (and indented) as a last resort only if they resist all simplification attempts.</li>
+  <li>Control simplification</li>
+</ol>
+
+<ul>
+  <li>A column should never span more than 80 characters. If you find that a column is too long, you should reduce its complexity, rather than break it into two distinct columns.</li>
+  <li>Simplify control flow by early exits from a method (via <code>return</code>) or from a loop (via <code>break</code> or <code>continue</code>).</li>
+  <li>Always omit the else of an <code>if</code> statement, if the main branch ends with a <code>return</code> statement or any other statement that does not let control carry through to the <code>else</code> branch. </li>
+</ul>
+
+<p>For example, instead of</p>
+
+<pre><code class="language-c">int abs(int x) {
+  if (x &lt; 0)
+    return -x;
+  else
+    return x;
+}</code></pre>
+
+<p>write</p>
+
+<pre><code class="language-c">int abs(int x) {
+  if (x &lt; 0)
+    return -x;
+  return x;
+}</code></pre>
