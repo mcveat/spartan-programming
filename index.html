@@ -8,6 +8,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.2.1/js/bootstrap.min.js" integrity="sha512-vyRAVI0IEm6LI/fVSv/Wq/d0KUfrg3hJq2Qz5FlfER69sf3ZHlOrsLriNm49FxnpUGmhx+TaJKwJ+ByTLKT+Yg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/9000.0.1/prism.min.js" integrity="sha512-UOoJElONeUNzQbbKQbjldDf9MwOHqxNz49NNJJ1d90yp+X9edsHyJoAs6O4K19CZGaIdjI5ohK+O2y5lBTW6uQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/9000.0.1/components/prism-java.min.js" integrity="sha512-BEknrL2CnuVpqnSTwO4a9y9uW5bQ/nabkJeahZ5seRXvmzAMq59Ja9OxZe3lVGrnKEcVlamL4nUBl03wzPM/nA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/9000.0.1/components/prism-c.min.js" integrity="sha512-EWIJI7uQnA8ClViH2dvhYsNA7PHGSwSg03FAfulqpsFiTPHfhdQIvhkg/l3YpuXOXRF2Dk0NYKIl5zemrl1fmA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.2.1/css/bootstrap.min.css" integrity="sha512-siwe/oXMhSjGCwLn+scraPOWrJxHlUgMBMZXdPe2Tnk3I0x3ESCoLz7WZ5NTH6SZrywMY+PB1cjyqJ5jAluCOg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/9000.0.1/themes/prism.min.css" integrity="sha512-/mZ1FHPkg6EKcxo0fKXF51ak6Cr2ocgDi5ytaTBjsQZIH/RNs6GF6+oId/vPe3eJB836T36nXwVh/WBl/cWT4w==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <link rel="stylesheet" href="/css/main.css"/>
@@ -21,6 +22,7 @@
             <li><a class="nav-link" data-bs-toggle="collapse" href="#pages">Pages</a></li>
             <li>
               <ul class="nav flex-column collapse" id="pages">
+                <li><a href="/pages/horizontal-complexity" class="nav-link">Horizontal complexity</a></li>
                 <li><a class="nav-link" href="/pages/readability">Readability</a></li>
               </ul>
             </li>
@@ -32,7 +34,7 @@
 
 <p>Spartan programming gathers many techniques discussed in the literature, adding some of its own, into a unique coding style whose main objective is minimal use of various elements of the programming language which may contribute to complexity. This programming style relies on strict self-discipline, avoiding some of the opportunities offered by the underlying language, geared at achieving the programming equivalent of laconic speech. </p>
 <p>Spartan programming is not directly concerned with <a href="pages/readability">readability</a>, at least not in its subjective and cultural-dependent sense. In fact, spartan programs will bring much misery to anyone preferring long, verbose programs.</p>
-<p>In certain ways, spartan programming is a coding style, just like the Linux kernel style guide. But, spartan programming is more than just a technical coding style, in that is has a single underlying, unifying principle - minimalism and simplicity taken to extremes.</p>
+<p>In certain ways, spartan programming is a coding style, just like <a href="https://www.kernel.org/doc/Documentation/process/coding-style.rst" target="_blank">the Linux kernel style guide</a>. But, spartan programming is more than just a technical coding style, in that is has a single underlying, unifying principle - minimalism and simplicity taken to extremes.</p>
 
 <h2>History</h2>
 
@@ -43,7 +45,7 @@
 <p>Spartan programming strives for simultaneous minimization of all of the following measures of code complexity:</p>
 
 <ol>
-  <li>Horizontal complexity, that is, the depth of nesting of control structures, just as the total line length.</li>
+  <li><a href="pages/horizontal-complexity">Horizontal complexity</a>, that is, the depth of nesting of control structures, just as the total line length.</li>
   <li>Vertical complexity, that is, module length in lines.</li>
   <li>Token count</li>
   <li>Character count</li>
