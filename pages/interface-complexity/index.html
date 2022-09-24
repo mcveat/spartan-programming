@@ -4,7 +4,7 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Spartan programming - Number of tokens</title>
+    <title>Spartan programming - Interface complexity</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.2.1/js/bootstrap.min.js" integrity="sha512-vyRAVI0IEm6LI/fVSv/Wq/d0KUfrg3hJq2Qz5FlfER69sf3ZHlOrsLriNm49FxnpUGmhx+TaJKwJ+ByTLKT+Yg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/9000.0.1/prism.min.js" integrity="sha512-UOoJElONeUNzQbbKQbjldDf9MwOHqxNz49NNJJ1d90yp+X9edsHyJoAs6O4K19CZGaIdjI5ohK+O2y5lBTW6uQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/9000.0.1/components/prism-java.min.js" integrity="sha512-BEknrL2CnuVpqnSTwO4a9y9uW5bQ/nabkJeahZ5seRXvmzAMq59Ja9OxZe3lVGrnKEcVlamL4nUBl03wzPM/nA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
@@ -35,24 +35,16 @@
         </div>
         <div class="col-9">
           
-<h1>Number of tokens</h1>
+<h1>Interface complexity</h1>
 
-<p>The Number Of Tokens (NOT) is a complexity metrics, computed is defined as the total number of language lexical tokens that are in the unit. For example, consider this famous starter program of the C programming language: </p>
-
-<pre><code class="language-c">#include &lt;stdio.h>
-int main()
-{
-  printf("Hello, World!\n");
-  return 0;
-}</code></pre>
-
-<p>The program comprises of the following tokens: 2 identifiers (<code>printf</code> and <code>main</code>, one string literal (<string>"Hello, World!\n"</string>) and one integer literal (<code>0</code>), two keywords (<code>int</code> and <code>return</code>), two semicolons, two pairs of parenthesis and one pair of curly brackets. The total token complexity of the program is therefore 14 (ignoring pre-processor directives).</p>
-
-<p><a href="/">Spartan programming</a> dictates that software unit should be simplified to as to minimize their token count complexity, while suggesting specific techniques for doing so, including:</p>
+<p><a href="/">Spartan programming</a> also dictates that each parameter is passed with least variability and interaction with other components of the program. The following is a list of methods of passing parameter in descending order of preference.</p>
 
 <ol>
-  <li>curly brackets elimination</li>
-  <li>parenthesis elimination</li>
+  <li>input parameters</li>
+  <li>output parameters</li>
+  <li>input-output parameters</li>
+  <li>by-reference parameters</li>
+  <li>by-name parameters</li>
 </ol>
 
         </div>
