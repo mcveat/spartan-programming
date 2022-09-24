@@ -3,6 +3,9 @@ module.exports = function(eleventyConfig) {
     var slugOrName = name || slug;
     return `<a href="pages/${slug}">${slugOrName}</a>`;
   });
+  eleventyConfig.addShortcode("home", function(name) {
+    return `<a href="/">${name}</a>`;
+  });
   eleventyConfig.addPassthroughCopy('css');
   return {
     dir: {

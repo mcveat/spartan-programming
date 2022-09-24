@@ -1,0 +1,24 @@
+---
+layout: page.njk
+title: Spartan programming - Number of tokens
+---
+
+<h1>Number of tokens</h1>
+
+<p>The Number Of Tokens (NOT) is a complexity metrics, computed is defined as the total number of language lexical tokens that are in the unit. For example, consider this famous starter program of the C programming language: </p>
+
+<pre><code class="language-c">#include &lt;stdio.h>
+int main()
+{
+  printf("Hello, World!\n");
+  return 0;
+}</code></pre>
+
+<p>The program comprises of the following tokens: 2 identifiers (<code>printf</code> and <code>main</code>, one string literal (<string>"Hello, World!\n"</string>) and one integer literal (<code>0</code>), two keywords (<code>int</code> and <code>return</code>), two semicolons, two pairs of parenthesis and one pair of curly brackets. The total token complexity of the program is therefore 14 (ignoring pre-processor directives).</p>
+
+<p>{% home "Spartan programming" %} dictates that software unit should be simplified to as to minimize their token count complexity, while suggesting specific techniques for doing so, including:</p>
+
+<ol>
+  <li>curly brackets elimination</li>
+  <li>parenthesis elimination</li>
+</ol>
