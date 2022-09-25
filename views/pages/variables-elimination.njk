@@ -1,0 +1,524 @@
+---
+layout: page.njk
+title: Spartan programming - Variables elimination
+---
+
+<h1>Variables elimination</h1>
+
+<p>The rationale behind the {% home "Spartan" %} desire to eliminate variables is that every variable places a burden on both the reader and the writer.</p>
+
+<ol>
+  <li>Each variable has a name. The code writer must spend precious mental effort on picking a good name for the variable. The code reader must spend similar effort in figuring out the intention of the reader from the name.</li>
+  <li>Variables tend to change. The code writer must invest resources in making sure that the variable is changed only when it is supposed to. The code reader must work out the set of locations that may change the variable, and understand the nature of these changes.</li>
+  <li>Variables may be used by the code. The code writer must define a role for that variable which suggests where that variable may be read. The code reader must understand that role, and to properly appreciate that role, he must work out the list of code locations in which the variable may be read.</li>
+</ol>
+
+<h2>Variables inlining</h2>
+
+<p>A variable that is used only once, is a perfect candidate for elimination. Simply replace the use of this variable with the expression that computes it. For example, instead of</p>
+
+<pre><code class="language-java">double a = p.area();
+return a;</code></pre>
+
+<p>you can write</p>
+
+<pre><code class="language-java">return p.area();</code></pre>
+
+<p>In the following example, drawn from the source code of JFLEX, variable <code>b</code> is used only once.</p>
+
+<pre><code class="language-java">public int interpret(int[] in, int[] par) {
+  boolean b = boolexp.interpret(in,par);
+  if (b)
+    return exp1.interpret(in,par);
+  else
+    return exp2.interpret(in,par);
+}</code></pre>
+
+<p>Eliminating this variable, we obtain</p>
+
+<pre><code class="language-java">public int interpret(int[] in, int[] par) {
+  if (boolexp.interpret(in,par))
+    return exp1.interpret(in,par);
+  else
+    return exp2.interpret(in,par);
+}</code></pre>
+
+<p>and by simple ternarization we get a single statement function</p>
+
+<pre><code class="language-java">public int interpret(int[] in, int[] par) {
+  return boolexp.interpret(in,par) ? exp1.interpret(in,par) : exp2.interpret(in,par);
+}</code></pre>
+
+<p>another ternarization steps yields</p>
+
+<pre><code class="language-java">public int interpret(int[] in, int[] par) {
+  return (boolexp.interpret(in,par) ? exp1 : exp2).interpret(in,par);
+}</code></pre>
+
+<h2>Inlining vs. Optimization and Clarity</h2>
+
+<p>Not all inlining opportunities should be exploited. Consider for example</p>
+
+<pre><code class="language-java">for (a = 0; a &lt; f(); a += g()) {
+  ...
+}</code></pre>
+
+<p>which may have resulted from inlining of a more explicit statement of the iteration boundaries</p>
+
+<pre><code class="language-java">int f = f(), g = g();
+for (a = 0; a  f; a += g) {
+  ...
+}</code></pre>
+
+<p>The semantics of these two code snippets is different though. In the former, functions <code>f</code> and <code>g </code>are evaluated in every iteration, while in the latter, they are evaluated only once.</p>
+
+<p>In the case that these functions' return value is not the same, the two loops will execute differently, and the variables should not be inlined.</p>
+
+<p>Should we use the inlined version of the code in the case that the two functions are pure, that is return the same value in all calls? If the purity of the functions is not obvious, then inlining may confuse the reader, and should not be used.</p>
+
+<p>But, what if purity is obvious? The inlined version is then at least as clear as the non-inlined, is shorter, and uses fewer variables. This version may also mean, at least with some compilers, slower execution. Hasting to optimize may not be a good idea though. Remember that premature optimization is a prime example of dangerous creativity and originality and that the loop may execute only a handful of times, or may not even be reached in most paths of execution.</p>
+
+<h2>Return the result as soon as it is found</h2>
+
+<p>Many routines define a variable to store their result. This variable can often be eliminated, by returning the result as soon as it is found.</p>
+
+<h3>Example 1</h3>
+
+<p>Consider for example the following simple function, designed to check if a given token is in a list of keywords.</p>
+
+<pre><code class="language-java">private boolean isKeyword(String token, String[] keywords) {
+  boolean result = false;
+  for (int i = 0; i &lt; keywords.length; i++)
+    if (token.equals(keywords[i]))
+      result = true;
+  return result;
+}</code></pre>
+
+<p>By returning the result as soon as we find it, we can eliminate variable <code>result</code>. The resulting function is not only shorter but also a bit more efficient.</p>
+
+<pre><code class="language-java">private boolean isKeyword(String token, String[] keywords) {
+  for (int i = 0; i < keywords.length; i++)
+    if (token.equals(keywords[i]))
+      return true;
+  return false;
+}</code></pre>
+
+<h3>Example 2</h3>
+
+<p>Here is another example, taken from the code of the CLASSYCLE project.</p>
+
+<pre><code class="language-java">private ResultRenderer getRenderer() throws InstantiationException, IllegalAccessException, ClassNotFoundException {
+  ResultRenderer renderer = new DefaultResultRenderer();
+  if (_resultRenderer != null)
+    renderer = (ResultRenderer) Class.forName(_resultRenderer).newInstance();
+  return renderer;
+}</code></pre>
+
+<p>which can be written simply as</p>
+
+<pre><code class="language-java">private ResultRenderer getRenderer() throws InstantiationException, IllegalAccessException, ClassNotFoundException {
+  return _resultRenderer != null ? (ResultRenderer) Class.forName(_resultRenderer).newInstance() : DefaultResultRenderer();
+}</code></pre>
+
+<h3>Example 3</h3>
+
+<p>A third example taken from the CLASSYCLE project is</p>
+
+<pre><code class="language-java">public boolean isFulfilled(Vertex vertex) {
+  boolean result = false;
+  if (vertex != null) {
+    Attributes attributes = vertex.getAttributes();
+    if (attributes instanceof NameAttributes)
+      result = _pattern.matches(((NameAttributes) attributes).getName());
+  }
+  return result;
+}</code></pre>
+
+<p>Returning the result as soon it is known also eliminates the first conditional</p>
+
+<pre><code class="language-java">public boolean isFulfilled(Vertex vertex) {
+  if (vertex == null)
+    return false;
+  Attributes attributes = vertex.getAttributes();
+  return attributes instanceof NameAttributes ? _pattern.matches(((NameAttributes) attributes).getName()) : false;
+}</code></pre>
+
+<h3>Example 4</h3>
+
+<p>Here is an even trickier example, drawn again from the CLASSYCLE project.</p>
+
+<pre><code class="language-java">private boolean matches(String string, int indexInString, int indexInConstantParts) {
+  boolean result = true;
+  if (indexInConstantParts &lt; _constantParts.length) {
+    String constantPart = _constantParts[indexInConstantParts];
+    do {
+      int index = string.indexOf(constantPart, indexInString);
+      if (index &lt; 0 || (indexInString == 0 && !_startsWithAnything && index > 0)) {
+        result = false;
+        break;
+      }
+      indexInString = index + constantPart.length();
+      result = matches(string, indexInString, indexInConstantParts + 1);
+    } while (result == false);
+  } else {
+    result = result && (_endsWithAnything || indexInString == string.length());
+  }
+  return result;
+}</code></pre>
+
+<p>This example is quite tricky. The variable <code>result</code> is used in several places, and the flow of control is a bit confusing. Let us therefore start by removing changing the order of the branches in the conditional statement following the shortest first technique.</p>
+
+<pre><code class="language-java">private boolean matches(String string, int indexInString, int indexInConstantParts) {
+  boolean result = true;
+  if (indexInConstantParts >= _constantParts.length)
+    result = result && (_endsWithAnything || indexInString == string.length());
+  } else {
+    String constantPart = _constantParts[indexInConstantParts];
+    do {
+      int index = string.indexOf(constantPart, indexInString);
+      if (index &lt; 0 || (indexInString == 0 && !_startsWithAnything && index > 0)) {
+        result = false;
+        break;
+      }
+      indexInString = index + constantPart.length();
+      result = matches(string, indexInString, indexInConstantParts + 1);
+    } while (result == false);
+  }
+  return result;
+}</code></pre>
+
+<p>It now becomes a bit clearer that we can return the correct value immediately in the first branch.</p>
+
+<pre><code class="language-java">private boolean matches(String string, int indexInString, int indexInConstantParts) {
+  if (indexInConstantParts >= _constantParts.length)
+    return _endsWithAnything || indexInString == string.length();
+  boolean result = true;
+  String constantPart = _constantParts[indexInConstantParts];
+  do {
+    int index = string.indexOf(constantPart, indexInString);
+    if (index &lt; 0 || (indexInString == 0 && !_startsWithAnything && index > 0)) {
+       result = false;
+       break;
+    }
+    indexInString = index + constantPart.length();
+    result = matches(string, indexInString, indexInConstantParts + 1);
+  } while (result == false);
+  return result;
+}</code></pre>
+
+<p>Examining now the inner conditional statement, we see that if the break is executed, then the returned value is <code>false</code>, so we can rewrite the function as follows:</p>
+
+<pre><code class="language-java">private boolean matches(String string, int indexInString, int indexInConstantParts) {
+  if (indexInConstantParts >= _constantParts.length)
+    return _endsWithAnything || indexInString == string.length();
+  boolean result = true;
+  String constantPart = _constantParts[indexInConstantParts];
+  do {
+    int index = string.indexOf(constantPart, indexInString);
+    if (index &lt; 0 || (indexInString == 0 && !_startsWithAnything && index > 0)) {
+      return false;
+    indexInString = index + constantPart.length();
+    result = matches(string, indexInString, indexInConstantParts + 1);
+  } while (result == false);
+  return result;
+}</code></pre>
+
+<p>Now, we see that if the loop terminates normally, the value of <code>result</code> must be <code>true</code>. A closer inspection reveals that the value of <code>result</code> is computed right before the loop ending condition. So, we can eliminate it altogether by writing</p>
+
+<pre><code class="language-java">private boolean matches(String string, int indexInString, int indexInConstantParts) {
+  if (indexInConstantParts >= _constantParts.length)
+    return _endsWithAnything || indexInString == string.length();
+  String constantPart = _constantParts[indexInConstantParts];
+  do {
+    int index = string.indexOf(constantPart, indexInString);
+    if (index &lt; 0 || (indexInString == 0 && !_startsWithAnything && index > 0)) {
+       return false;
+    indexInString = index + constantPart.length();
+  } while (!matches(string, indexInString, indexInConstantParts + 1));
+  return true;
+}</code></pre>
+
+<h2>Eliminate iteration and indexing variables using foreach loops</h2>
+
+<h3>Array indices</h3>
+
+<p>A famous idiom for iterating over an array is</p>
+
+<pre><code class="language-java">for (int i = 0; i &lt; array.length; i++) {
+  ... //Do something with array[i]
+}</code></pre>
+
+<p>But, if the loop's body never uses variable <code>i</code> nor modifies <code>array[i]</code>, then the loop can be more concisely written as</p>
+
+<pre><code class="language-java">for (T a: array) {
+  ... //Do something with a
+}</code></pre>
+
+<p>where <code>T</code> is the type of elements of array <code>array</code>.</p>
+
+<p>The above example of searching through an array of keywords, can thus be rewritten to eliminate variable <code>i</code></p>
+
+<pre><code class="language-java">private boolean isKeyword(String token, String[] keywords) {
+  for (final String element : keywords)
+    if (element.equals(token))
+      return true;
+  return false;
+}</code></pre>
+
+<p>The following represents a common structure of the main function of many file processing applications.</p>
+
+<pre><code class="language-java">public static void main(String argv[]) {
+  for (int i = 0; i &lt; argv.length; i++) {
+    try {
+      System.out.println("Processing ["+argv[i]+"]");
+      process(new FileReader(argv[i])));
+      System.out.println("No errors processing " + argv[i]);
+    } catch (Exception e) {
+      e.printStackTrace(System.out);
+      System.exit(1);
+    }
+  }
+}</code></pre>
+
+<p>With this technique, it is simplified to the following</p>
+
+<pre><code class="language-java">public static void main(String argv[]) {
+  for (final String f : argv) {
+    try {
+      System.out.println("Processing ["+f+"]");
+      process(new FileReader(f)));
+      System.out.println("No errors processing " + f);
+    } catch (Exception e) {
+      e.printStackTrace(System.out);
+      System.exit(1);
+    }
+  }
+}</code></pre>
+
+<h3>Collections</h3>
+
+<p>Old Java code iterating over collections uses an instance of class <code>Iterator</code> to carry out the iteration. This iteration variable can be eliminated.</p>
+
+<p>The following function is drawn from class <code>SecureRandom</code> of package <code>java.security</code> in the Java runtime library.</p>
+
+<pre><code class="language-java">private static String getPrngAlgorithm() {
+  List provs = Providers.getProviderList().providers();
+  for (Iterator t = provs.iterator(); t.hasNext();) {
+  Provider p = (Provider) t.next();
+  for (Iterator u = p.getServices().iterator(); u.hasNext();) {
+    Service s = (Service) u.next();
+    if (s.getType().equals("SecureRandom")) {
+      return s.getAlgorithm();
+      }
+    }
+  }
+  return null;
+}</code></pre>
+
+<p>In this function we have two iteration variables, <code>t</code> and <code>u</code>, both of which can be eliminated. Also, variable, <code>provs</code> is used only once, so it is safe to eliminate as well.</p>
+
+<p>The result is:</p>
+
+<pre><code class="language-java">private static String getPrngAlgorithm() {
+  for (Provider p : Providers.getProviderList().providers())
+    for (Service s : p.getServices())
+      if (s.getType().equals("SecureRandom"))
+        return s.getAlgorithm();
+  return null;
+}</code></pre>
+
+The {% page "number-of-tokens", "NOT" %} metric is reduced by this simplification by 50% (from 113 to 56).
+
+<h2>Inlining vs. Optimization and Clarity</h2>
+
+<p>Not all opportunities for inlining should be exploited. Consider for example</p>
+
+<pre><code class="language-java">for (a = 0; a &lt; f(); a += g()) {
+  ...
+}</code></pre>
+
+<p>which may have resulted from inlining of a more explicit statement of the iteration boundaries</p>
+
+<pre><code class="language-java">int bound = f(), step = g();
+for (a = 0; a &lt; bound; a += step) {
+  ...
+}</code></pre>
+
+<p>The semantics of these two code snippets is different though. In the former, functions <code>f</code> and <code>g</code> are evaluated in every iteration, while in the latter, they are evaluated only once.</p>
+
+<p>In the case that these functions' return value is not the same, the two loops will execute differently, and the variables should not be inlined.</p>
+
+<p>But, in the case that the two functions return the same value in all calls using the first form of the code may mean lost optimization opportunities. Choosing between the two versions is a matter of favoring between clarity of the design.</p>
+
+<h2>Chained Elimination</h2>
+
+<p>Sometimes, several steps are required to eliminate a variable. Consider for example the following constructor</p>
+
+<pre><code class="language-java">protected Term(IndexFactory a, Predicate target, List&lt;Attribute> as, Location loc) {
+  super(a, loc);
+  predicate = target;
+  this.loc = loc;
+  Attribute[] temp = new Attribute[as.size()];
+  temp = as.toArray(temp);
+  for (int i = 0; i &lt; temp.length; ++i)
+      temp[i] = as.get(i);
+  attributes = Sequence.make(temp);
+}</code></pre>
+
+<p>We would like to eliminate both variable <code>temp</code> and <code>i</code>. This time, we cannot use an enhanced for <code>loop</code> syntax, since this iteration mechanism does not allow one update the underlying collection.</p>
+
+<p>However, the elimination of <code>i</code> is rather easy if we remember that the <code>List</code> interface offers a <code>toArray</code> method, so we do not need variable <code>i</code> to iterate over the array. The tricky part is that for reasons related to the implementation of generics in Java this method requires an array as a parameter. (There is also an overloaded version of this method which takes no parameters. Alas, this version returns an array of <code>Object</code>s instead of an array of the right type.) </p>
+
+<p>We thus write:</p>
+
+<pre><code class="language-java">protected Term(IndexFactory a, Predicate target, List&lt;Attribute> as, Location loc) {
+  super(a, loc);
+  predicate = target;
+  this.loc = loc;
+  Attribute[] temp = as.toArray(new Attribute[as.size()]);
+  attributes = Sequence.make(temp);
+}</code></pre>
+
+<p>Now, we can eliminate <code>temp</code> altogether.</p>
+
+<pre><code class="language-java">rotected Term(IndexFactory a, Predicate target, List&lt;Attribute> as, Location loc) {
+  super(a, loc);
+  predicate = target;
+  this.loc = loc;
+  attributes = Sequence.make(as.toArray(new Attribute[as.size()]));
+}</code></pre>
+
+<p>Finally, re-examining the specification of <code>toArray</code>, we see that it does not need an array of the correct size, so instead</p>
+
+<pre><code class="language-java">attributes = Sequence.make(as.toArray(new Attribute[as.size()]));</code></pre>
+
+<p>we can write</p>
+
+<pre><code class="language-java">attributes = Sequence.make(as.toArray(new Attribute[0]));</code></pre>
+
+<h2>A Concluding Example</h2>
+
+<p>The following example is taken from the Java run time library (class in package <code>com.sun.corba.se.impl.activation</code>), and was obviously written before the new syntax of <code>for</code> loops was introduced.</p>
+
+<pre><code class="language-java">public int[] getActiveServers() {
+  ServerTableEntry entry;
+  int[] list = null;
+  synchronized (serverTable) {
+    // unlike vectors, list is not synchronized
+    ArrayList servers = new ArrayList(0);
+    Iterator serverList = serverTable.keySet().iterator();
+    try {
+      while (serverList.hasNext()) {
+        Integer key = (Integer) serverList.next();
+        // get an entry
+        entry = (ServerTableEntry) serverTable.get(key);
+        if (entry.isValid() && entry.isActive()) {
+          servers.add(entry);
+        }
+      }
+    } catch (NoSuchElementException e) {
+      // all done
+    }
+    // collect the active entries
+    list = new int[servers.size()];
+    for (int i = 0; i &lt; servers.size(); i++) {
+      entry = (ServerTableEntry) servers.get(i);
+      list[i] = entry.getServerId();
+    }
+  }
+  if (debug) {
+    StringBuffer sb = new StringBuffer();
+    for (int ctr = 0; ctr &lt; list.length; ctr++) {
+      sb.append(' ');
+      sb.append(list[ctr]);
+    }
+    System.out.println("ServerManagerImpl: getActiveServers returns" + sb.toString());
+  }
+  return list;
+}</code></pre>
+
+<p>Concentrating on the first loop,</p>
+
+<pre><code class="language-java">Iterator serverList = serverTable.keySet().iterator();
+try {
+  while (serverList.hasNext()) {
+    Integer key = (Integer) serverList.next();
+    // get an entry
+    entry = (ServerTableEntry) serverTable.get(key);
+    if (entry.isValid() && entry.isActive()) {
+      servers.add(entry);
+    }
+  }
+} catch (NoSuchElementException e) {
+  // all done
+}</code></pre>
+
+<p>we see that both variable <code>key</code> and variable <code>serverList</code> can be eliminated</p>
+
+<pre><code class="language-java">try {
+  for (ServerTableEntry e : serverTable.values())
+    if (e.isValid() && e.isActive())
+      servers.add(e);
+} catch (NoSuchElementException e) {
+  // all done
+}</code></pre>
+
+<p>In the second loop,</p>
+
+<pre><code class="language-java">// collect the active entries
+list = new int[servers.size()];
+for (int i = 0; i &lt; servers.size(); i++) {
+  entry = (ServerTableEntry) servers.get(i);
+  list[i] = entry.getServerId();
+}</code></pre>
+
+<p>we cannot eliminate any variables. Yet, the iteration is simplified by using the new syntax.</p>
+
+<pre><code class="language-java">// collect the active entries
+list = new int[servers.size()];
+int i = 0;
+for (ServerTableEntry e : servers)
+  list[i++] = e.getServerId();</code></pre>
+
+<p>The third looping instruction </p>
+
+<pre><code class="language-java">for (int ctr = 0; ctr &lt; list.length; ctr++) {
+  sb.append(' ');
+  sb.append(list[ctr]);
+}</code></pre>
+
+<p>makes it possible to eliminate variable <code>ctr</code>:</p>
+
+<pre><code class="language-java">for (int id : list)
+  sb.append(' ').append(id);</code></pre>
+
+<p>Applying all these modifications, and passing an appropriate generic parameter to the local variable servers, the function now looks as follows:</p>
+
+<pre><code class="language-java">public int[] getActiveServers() {
+  int[] list;
+  synchronized (serverTable) {
+    // unlike vectors, list is not synchronized
+    ArrayList<ServerTableEntry> servers = new ArrayList<ServerTableEntry>(0);
+    try {
+      for (ServerTableEntry e : serverTable.values())
+        if (e.isValid() && e.isActive())
+          servers.add(e);
+    } catch (NoSuchElementException e) {
+      // all done
+    }
+    // collect the active entries
+    list = new int[servers.size()];
+    int i = 0;
+    for (ServerTableEntry e : servers)
+      list[i++] = e.getServerId();
+  }
+  if (debug) {
+    StringBuffer sb = new StringBuffer();
+    for (int id : list)
+      sb.append(' ').append(id);
+    System.out.println("ServerManagerImpl: getActiveServers returns" + sb.toString());
+  }
+  return list;
+}</code></pre>
+
+<p>In total, the {% page "number-of-tokens", "NOT" %} metric is reduced from 235 to 164 (30% reduction).</p>
