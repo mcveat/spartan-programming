@@ -1,0 +1,101 @@
+---
+layout: page.njk
+title: Spartan programming - The Babylonian tower principle
+---
+
+<h1>The Babylonian tower principle</h1>
+
+<p>The Babylonian tower principle states that programming languages still, and probably will ever fail to produce abstraction mechanisms suitable for large software modules.</p>
+
+<h2>Software as a graph</h2>
+
+<p>Software is often modeled as a directed graph. Nodes in this graph are usually software modules, which are connected through composition/decomposition mechanisms. For example, in the imperative paradigm, modules are {% page "routine", "routines" %}, which interact through invocation. In the object oriented paradigm, modules are classes, which interact through mechanisms such as inheritance, type composition, etc. </p>
+
+<h2>Graph granularity</h2>
+
+<p>But, such a graph can be drawn at different levels of granularity. One can for example have a node for every (high level language) statement in the program, or even for every machine level instruction. A typical such portrayal of a program is the <em>block diagram</em>, in which nodes are blocks, a sequence of machine instructions which are always executed together.</p>
+
+<p>Fine grain graphs of this sort are useful for obtaining a global picture of the program. Such graphs may comprise hundreds of thousands, even millions of nodes, and an even a greater number of edges. To be able to design, understand and reasnon about software, one needed a coarser grain description. A coarse grain graph is obtained from a finer grain graph by grouping together a number of nodes into a single node. For example, the control flow graph is obtained by grouping together all blocks which belong into a single routine, creating one node out of these.</p>
+
+<h2>Software organization as successive graph refinements</h2>
+
+<p>Ideally, the process of coarsening a graph can continue until one obtains a simple graph, say one which can be drawn on a drawing sheet, giving a high level description of the software. The full software graph can then be obtained by successive refinements of this high level description. Further, in an ideal setting, each such refinement replaces a node with a graph which is small and simple enough to be understood without examining other subgraphs.</p>
+
+<p>In these idealized setting, we obtain a hierarchical description of the software. At each level of the hierarchy we have a graph, obtained by refining the graph of the previous level. This graph could be divided into subgraphs, each traceable to a node in the preceding level.</p>
+
+<p>One may even dream about a design process which starts at the high level graph, and continues to refine it until the final software product is obtained.</p>
+
+<p>t was the hope of many language designers that the main abstraction mechanism used by the language would be used for this refinement coarsening process. For example, Pascal allows the definition of routines inside routines, Modula allows modules to be nested in each other, etc.</p>
+
+<h2>Missing abstraction mechanisms</h2>
+
+<p><em>The Babylonian tower principle</em> summarizes the observation that no one abstraction mechanism can serve the coarsening mechanisms needed at different levels of this idealized picture. Further, the principles states that state of the art programming languages still fail to offer abstraction mechanisms for the organization of higher level software modules.
+</p>
+
+<h3>Hierarchy of abstraction mechanisms in C++</h3>
+
+<p>In C++ for example, one finds the following mechanisms:</p>
+
+<ol>
+  <li>Functions used to organize together a collection of executional statements,</li>
+  <li>Classes, which group together variables and functions that operate on these,</li>
+  <li>Files, in which several classes can be put together, and</li>
+  <li>Namespaces which may span several files.</li>
+</ol>
+
+<p>However, the language provides no mechanism for the organization of the many source files found in a typical large software project. It is the responsibility of the software designer to craft a discipline of organizing these just as the interaction of this organization with namespace mechanism. Note that the language support decreases in the higher abstraction levels. Files, e.g., offer only two encapsulation levels, and no support of genericity (that is one cannot design a generic module and encapsulate it in a compilation unit, which takes type parameters). Namespaces are further limited in that they offer no encapsulation levels.</p>
+
+<h3>Hierarchy of abstraction mechanisms with PHP</h3>
+
+<p>The situation is not much different with PHP, in which we again see</p>
+
+<ol>
+  <li>Functions,</li>
+  <li>Classes and</li>
+  <li>Files.</li>
+</ol>
+
+<h3>Hierarchy of abstraction mechanisms in Java</h3>
+
+<p>Similarly, in Java, one finds the following mechanisms:</p>
+
+<ol>
+  <li>Methods which is the smallest module in which is packaged,</li>
+  <li>Classes, which are used to group [[method]s and variables,</li>
+  <li>files in which several classes can be placed (note that this is possible by the language definition, but many choose to adhere to the convention of one class to a file),</li>
+  <li>Packages which group a number of classes, and</li>
+  <li>Jar files that may contain a number of packages.</li>
+</ol>
+
+<p>Java allows the Babylonian tower to rise a little higher, in that the language sets for the designer clear and concise rules on how compilation units are organized in packages.</p>
+
+<h3>Hierarchy of abstraction mechanisms with Eclipse</h3>
+
+<p>Eclipse adds several more levels to the tower, including the ability to organize software, and most imortantly, Java software in</p>
+
+<ol>
+  <li>projects, which group together packages and jar files,</li>
+  <li>working sets, which group together several projects, and in</li>
+  <li>work spaces, each grouping together a number of working sets.</li>
+</ol>
+
+<h3>Improvished higher level abstraction mechanisms</h3>
+
+<p>Still, we see the trend that the support of higher level mechanisms is not as rich as the lower level. For example, Java offers minimal language support for the grouping of classes in packages. This support includes two main features:</p>
+
+<ul>
+  <li>A package level <em>JavaDoc</em> file, and </li>
+  <li>setting a <em>default access level</em> to allow classes in the same package access to certain members in other classes of the same package. </li>
+</ul>
+
+<p>But, the richer repertoire of language tools available for classes, including inner classes, enums, annotations, genericity, constructors, static initializers, etc., do not reach the package level.</p>
+
+<p>The bundling of several packages in a jar files offers even lesser support, which is limited to a declaration that a package found jar file is <em>sealed</em> in that it does not allow clients to add more classes to this package.</p>
+
+<p>Similarly, the tool support of the higher mechanisms offered by Eclipse: projects, workings sets and work spaces is very basic. It is not easy to formulate constraints on the ways that subsystems thus organized can interact with each other.</p>
+
+<h2>Summary</h2>
+
+<p>The Babylonian tower thus predicts a collapse of the abstraction mechanisms at the fourth or the fifth level, at which, with the absence of a pre-meditated architectures, the software is expected to fail. In trying to keep the number of subcomponents of each software unit in the limits of seven plus minus one or two principle, one would expect software organizational failure when the system has about 104 - 105 atomic units.</p>
+
+<p>The use of {% home "spartan programming" %} allows one to make a more effective use of the available language mechanisms, whereby gaining a level or even two of the Babylonian software tower. </p>
