@@ -1,0 +1,246 @@
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spartan programming - Readability</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.2.1/js/bootstrap.min.js" integrity="sha512-vyRAVI0IEm6LI/fVSv/Wq/d0KUfrg3hJq2Qz5FlfER69sf3ZHlOrsLriNm49FxnpUGmhx+TaJKwJ+ByTLKT+Yg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/9000.0.1/prism.min.js" integrity="sha512-UOoJElONeUNzQbbKQbjldDf9MwOHqxNz49NNJJ1d90yp+X9edsHyJoAs6O4K19CZGaIdjI5ohK+O2y5lBTW6uQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/9000.0.1/components/prism-java.min.js" integrity="sha512-BEknrL2CnuVpqnSTwO4a9y9uW5bQ/nabkJeahZ5seRXvmzAMq59Ja9OxZe3lVGrnKEcVlamL4nUBl03wzPM/nA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/9000.0.1/components/prism-c.min.js" integrity="sha512-EWIJI7uQnA8ClViH2dvhYsNA7PHGSwSg03FAfulqpsFiTPHfhdQIvhkg/l3YpuXOXRF2Dk0NYKIl5zemrl1fmA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.2.1/css/bootstrap.min.css" integrity="sha512-siwe/oXMhSjGCwLn+scraPOWrJxHlUgMBMZXdPe2Tnk3I0x3ESCoLz7WZ5NTH6SZrywMY+PB1cjyqJ5jAluCOg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/9000.0.1/themes/prism.min.css" integrity="sha512-/mZ1FHPkg6EKcxo0fKXF51ak6Cr2ocgDi5ytaTBjsQZIH/RNs6GF6+oId/vPe3eJB836T36nXwVh/WBl/cWT4w==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="/css/main.css"/>
+  </head>
+  <body>
+    <div class="container">
+      <div class="row">
+        <div class="col-3">
+          <ul class="nav flex-column">
+            <li class="nav-item"><a class="nav-link" href="/">Home</a></li>
+            <li><a class="nav-link" data-bs-toggle="collapse" href="#pages">Pages</a></li>
+            <li>
+              <ul class="nav flex-column collapse" id="pages">
+                <li><a href="/pages/character-count" class="nav-link">Character count</a></li>
+                <li><a href="/pages/horizontal-complexity" class="nav-link">Horizontal complexity</a></li>
+                <li><a href="/pages/interface-complexity" class="nav-link">Interface complexity</a></li>
+                <li><a href="/pages/number-of-tokens" class="nav-link">Number of tokens</a></li>
+                <li><a href="/pages/readability" class="nav-link">Readability</a></li>
+                <li><a href="/pages/routine" class="nav-link">Routine</a></li>
+                <li><a href="/pages/vertical-complexity" class="nav-link">Vertical complexity</a></li>
+              </ul>
+            </li>
+            <li><a class="nav-link" href="/about">About</a></li>
+          </ul>
+        </div>
+        <div class="col-9">
+          
+<h1>Readability</h1>
+
+<p>Readability is an abstract, illusive objective, which, as dictated by the nonsense principle is often abused. Religious wars often waged on issues of "readability". The common theme to these is is that what is described as readable by one, is vehemently portrayed as unreadable by others. Arguments in readability disputes use technique such as "proof by authority", "proof by exhaustion", tautologies and the such. The truth is that most differences in opinion which are not mere superstitions, are traceable to differences in cultural background and education. </p>
+
+<p>The following guidelines seem to stand out as being as universal, not as disputable as others, means for enhancing readability:</p>
+
+<ol>
+  <li>The uniformity rule, suggesting that unneeded variety is minimized.</li>
+  <li>Imitation of common textual and mathematical typographical conventions.</li>
+  <li>Presentation of shorter and easier to understand items first.</li>
+</ol>
+
+<h2>Typographical conventions</h2>
+
+<ul>
+  <li>
+    <p>In order to take advantage of the reader's familiarity with mathematical functions, do not separate a function name from its arguments by spaces. Thus, you should write:</p>
+
+    <code>y = sin(x);</code>
+
+    <p>rather than</p>
+
+    <code>y=sin (x);</code>
+  </li>
+  <li>After each of the following control flow keywords <code>if</code>, <code>switch</code>, <code>for</code>, and <code>catch</code> we find code written in parenthesis. Each of these keywords should be separated from the opening parenthesis (the "(" character) by a single space, to distinguish these from function calls.</li>
+  <li>Similarly, <code>return</code> and <code>throw</code> are not functions. Do not wrap the returned or thrown expression in parenthesis.</li>
+  <li>On the other hand, the <code>this</code> and <code>super</code> keywords can be used as constructor functions. If this is the case, there should be no space between such a keyword and the opening parenthesis.</li>
+  <li>
+    <p>In expressions, it is safe to assume that the reader is familiar with the precedence rules of mathematical expressions. Extra parenthesis that restate these precedence degrade readability. Thus, do write:</p>
+
+    <code>if (b*b - 4*a*c > 0)</code>
+
+    <p>rather than:</p>
+
+    <code>if (((b*b) - (4*a*c)) > 0)</code>
+
+    <p>More generally, it is wise to assume that the reader is familiar with the following order of precedence (from highest to lowest):</p>
+
+    <ol>
+      <li>Multiplication and division, that is <code>*</code>, <code>/</code> and <code>%</code>.</li>
+      <li>Addition and subbstraction, that is <code>+</code> and <code>-</code>. </li>
+      <li>Comparison, that is <code>==</code>, <code>!=</code>, <code>></code>, <code>&lt;</code>, <code>>=</code>, and <code>&lt;=</code>.</li>
+      <li>Negation, that is the <code>!</code> operator.</li>
+      <li>Conjunction, that is the <code>&&</code> operator.</li>
+      <li>Disjunction, that is the <code>||</code> operator.</li>
+      <li>Assignment, that is <code>=</code>, <code>+=</code>, <code>-=</code>, <code>*=</code>, <code>%=</code>, <code>&=</code>, <code>|=</code>, <code>&lt;&lt;=</code>, <code>>=</code> and <code>>=</code>.</li>
+    </ol>
+
+    <p>The obscure operators are those that do not commonly occur in mathematics. Use parenthesis for operators such as instanceof, and bitwise operators including <code>&</code>, <code>^</code>, <code>>></code>, and <code>&lt;&lt;</code>.</p>
+
+    <p>Typographical convention of mathematics dictate that the space surrounding higher precedence operators is smaller than that surrounding lower precedence operators. In <code>b^2 - 4ac</code>. for example, the space between <code>a</code> and <code>c</code> is slightly smaller than the space around the minus sign. It is a good idea to try to imitate this in your code, by writing e.g.</p>
+
+    <code>b*b - 4*a*c</code>
+
+    <p>instead of just</p>
+
+    <code>b*b-4*a*c</code>
+
+    <p>Never use spaces to mislead your reader, as in the following</p>
+
+    <code>b * b-4  *a   *c</code>
+
+    <p>This technique of enhancing readability is limited since mathematical typography use various fractions of the (average) character width as space padding around operators.</p>
+  </li>
+</ul>
+
+<h2>Mathematical Conventions</h2>
+
+<p>Most software engineers are graduates of computer science or other scientific discipline, and have had at least basic mathematical education. They would find code relying on common conventions used in mathematics very readable. This is the reason that integral loop variables often use the letters <code>i</code>, <code>j</code>, and <code>k</code> as in the above example.</p>
+
+<p>This is also the reason that <code>cot(double x)</code> is immediately recognized as the function computing the trigonometric cotangent, and that the name x for it argument is recognized. </p>
+
+<p>For the same reason, a generic function is often named <code>f</code> in code. </p>
+
+<h2>Simpler first</h2>
+
+<p>Remember that your code is read sequentially. Thus, avoid loading the reader's memory unnecessarily:</p>
+
+<ul>
+  <li>Place the shorter branch first in a two-way conditional statement.</li>
+  <li>Treat simpler cases first.</li>
+  <li>Place simpler functions before more complex ones, unless there is a compelling reason not to do so.</li>
+</ul>
+
+<h3>Example</h3>
+
+<p>Consider the following routine, taken from class Constant in package classycle.classfile of the <a href="http://classycle.sourceforge.net/" target="_blank">classycle</a> project.</p>
+
+<pre><code class="language-java">public static Constant[] extractConstantPool(DataInputStream stream) throws IOException {
+  Constant[] pool = null;
+  if (stream.readInt() == MAGIC) {
+    stream.readUnsignedShort();
+    stream.readUnsignedShort();
+    pool = new Constant[stream.readUnsignedShort()];
+    for (int i = 1; i < pool.length;) {
+      boolean skipIndex = false;
+      Constant c = null;
+      int type = stream.readUnsignedByte();
+      switch (type) {
+        case CONSTANT_CLASS:
+          c = new ClassConstant(pool, stream.readUnsignedShort());
+          break;
+        case CONSTANT_FIELDREF:
+          c = new FieldRefConstant(pool, stream.readUnsignedShort(), stream.readUnsignedShort());
+          break;
+        case CONSTANT_METHODREF:
+          c = new MethodRefConstant(pool, stream.readUnsignedShort(), stream.readUnsignedShort());
+          break;
+        case CONSTANT_INTERFACE_METHODREF:
+          c = new InterfaceMethodRefConstant(pool, stream.readUnsignedShort(), stream.readUnsignedShort());
+          break;
+        case CONSTANT_STRING:
+          c = new StringConstant(pool, stream.readUnsignedShort());
+          break;
+        case CONSTANT_INTEGER:
+          c = new IntConstant(pool, stream.readInt());
+          break;
+        case CONSTANT_FLOAT:
+          c = new FloatConstant(pool, stream.readFloat());
+          break;
+        case CONSTANT_LONG:
+          c = new LongConstant(pool, stream.readLong());
+          skipIndex = true;
+          break;
+        case CONSTANT_DOUBLE:
+          c = new DoubleConstant(pool, stream.readDouble());
+          skipIndex = true;
+          break;
+        case CONSTANT_NAME_AND_TYPE:
+          c = new NameAndTypeConstant(pool, stream.readUnsignedShort(), stream.readUnsignedShort());
+          break;
+        case CONSTANT_UTF8:
+          c = new UTF8Constant(pool, stream.readUTF());
+          break;
+      }
+      pool[i] = c;
+      i += skipIndex ? 2 : 1; // double and long constants occupy two
+                  // entries
+    }
+    return pool;
+  } else
+    throw new IOException("Not a class file: Magic number missing.");
+}</code></pre>
+
+<p>The main if statement in the above has two branches. In the first, comprising 49 lines, the entire processing is carried out. The second branch is a one liner, taking care of the case that the first 16 bits word in the input is not a magic number. While examining the first branch, the reader should constantly be aware that it is executed conditionally, and that there is still another main case to worry about.</p>
+
+<p>Flipping the order of the two branches removes this burden. Further, since the case that input does not start correctly leads to abnormal early termination of the function, the second branch does not need to be nested.</p>
+
+<pre><code class="language-java">public static Constant[] extractConstantPool(DataInputStream stream) throws IOException {
+  Constant[] pool = null;
+  if (stream.readInt() != MAGIC)
+      throw new IOException("Not a class file: Magic number missing.");
+  stream.readUnsignedShort();
+  stream.readUnsignedShort();
+  pool = new Constant[stream.readUnsignedShort()];
+  for (int i = 1; i < pool.length;) {
+    boolean skipIndex = false;
+    Constant c = null;
+    int type = stream.readUnsignedByte();
+    switch (type) {
+      case CONSTANT_CLASS:
+        c = new ClassConstant(pool, stream.readUnsignedShort());
+        break;
+      case CONSTANT_FIELDREF:
+        c = new FieldRefConstant(pool, stream.readUnsignedShort(), stream.readUnsignedShort());
+        break;
+      case CONSTANT_METHODREF:
+        c = new MethodRefConstant(pool, stream.readUnsignedShort(), stream.readUnsignedShort());
+        break;
+      case CONSTANT_INTERFACE_METHODREF:
+        c = new InterfaceMethodRefConstant(pool, stream.readUnsignedShort(), stream.readUnsignedShort());
+        break;
+      case CONSTANT_STRING:
+        c = new StringConstant(pool, stream.readUnsignedShort());
+        break;
+      case CONSTANT_INTEGER:
+        c = new IntConstant(pool, stream.readInt());
+        break;
+      case CONSTANT_FLOAT:
+        c = new FloatConstant(pool, stream.readFloat());
+        break;
+      case CONSTANT_LONG:
+        c = new LongConstant(pool, stream.readLong());
+        skipIndex = true;
+        break;
+      case CONSTANT_DOUBLE:
+        c = new DoubleConstant(pool, stream.readDouble());
+        skipIndex = true;
+        break;
+      case CONSTANT_NAME_AND_TYPE:
+        c = new NameAndTypeConstant(pool, stream.readUnsignedShort(), stream.readUnsignedShort());
+        break;
+      case CONSTANT_UTF8:
+        c = new UTF8Constant(pool, stream.readUTF());
+        break;
+    }
+    pool[i] = c;
+    i += skipIndex ? 2 : 1; // double and long constants occupy two
+                // entries
+  }
+  return pool;
+}</code></pre>
+
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
