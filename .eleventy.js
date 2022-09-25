@@ -7,6 +7,7 @@ module.exports = function(eleventyConfig) {
     return `<a href="/">${name}</a>`;
   });
   eleventyConfig.addPassthroughCopy('css');
+  eleventyConfig.addPassthroughCopy('CNAME');
   return {
     dir: {
       input: "views",
