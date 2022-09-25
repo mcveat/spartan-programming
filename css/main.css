@@ -7,3 +7,7 @@ p {
   margin-left: 1rem;
   font-size: 14px;
 }
+
+#changes ul {
+  margin-bottom: 0;
+}
