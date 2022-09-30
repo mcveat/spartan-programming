@@ -1,0 +1,248 @@
+---
+layout: page.njk
+title: Spartan programming - Generic names
+---
+
+<h1>Generic names</h1>
+
+{% improved "generic-names", "Generic names" %}
+
+<p>The terse naming technique is one of the principal technique for reducing {% page "character-count", "character count" %} complexity metric, but it offers positive implications on the {% page "horizontal-complexity", "horizontal complexity" %} as well. The technique dictates a replacement of long variable names with short, often one or two characters long, names. This is possible mostly in the case that the identifier represents a <em>generic</em> member of its kind. The code will obfuscated if such short names are used for non-generic members.</p>
+
+<h3>Motivation</h3>
+
+<p>The following function takes a quadratic function, specified by the three coefficients of the polynomial, and draws the values of this function in several integral points.</p>
+
+<pre><code class="language-c">void draw_Quadratic_function(
+  double coefficient_X_squared,
+  double coefficient_X,
+  double free_coefficient,
+  int points_count
+) {
+  double values_array[] = new double[points_count];
+  for (int index = 0; index &lt; points_count; index++)
+    values_array[index] = coefficient_Xsquared * index * index + coefficient_X * index + free_coefficient;
+  draw(values_array,points_count);
+}</code></pre>
+
+<p>The parameters to this function are generic, that is, no special assumptions are made about any one of them. The first three parameters are arbitrary <code>double</code> values, while the fourth is a non-negative integers. The terse naming technique dictates using one letter names for all of these: </p>
+
+<pre><code class="language-c">void draw_quad_func(double a, double b, double c, int n) {
+  double f[] = new double[n];
+  for (int i = 0; i &lt; n; i++)
+    f[i] = a * i * i + b * i + c;
+  draw(f,n);
+}</code></pre>
+
+<p>The choice of names relies on common mathematical conventions for the names of the coefficients of a quadratic polynomial, and the use of <em>n</em> as a generic name for a generic non-negative integer.</p>
+
+<p>This shorter former should be just as clear as its longer version. Further, the shorter form reveals a quick optimization by using Newtwon's formula for the evaluation of polynomials</p>
+
+<pre><code class="language-c">void draw_quad_func(double a, double b, double c, int n) {
+  double f[] = new double[n];
+  for (int i = 0; i &lt; n; i++) 
+    f[i]=(a * i + b ) * i + c; 
+  draw(f,n); 
+}</code></pre>
+
+<p>which incidentally reduces further the character count and the token count metrics.</p>
+
+<p>As shown in the above example, trying to make up "good", in the sense of long, verbose and descriptive names for generic variables may yield somewhat awkward names such <code>coefficient_X_squared</code>. It may also lead to inconsistent naming. Consider for example functions <code>compareTo</code> and <code>compareToIgnoreCase</code></p>
+
+<pre><code class="language-java">/**
+* Compares two strings lexicographically.
+* The comparison is based on the...
+* @param anotherString the String to be compared.
+* @return ...
+*/
+public int compareTo(String anotherString) {
+  // ...
+}</code></pre>
+
+<pre><code class="language-java">/**
+* Compares two strings lexicographically, ignoring case
+* differences...
+* @param str the String to be compared.
+* @return ...
+*/
+public int compareToIgnoreCase(String str) {
+  // ...
+}</code></pre>
+
+<p>both of which are part of Java's standard implementation of the <code>String</code> data type, that is <code>java.lang.String</code>. In the first, the generic parameter is named <code>anotherString</code> while in the other, it is named <code>str</code>, even though the functions are similar, and both parameters serve the same role. Similarly, we find in the same class a function whose signature is</p>
+
+<pre><code class="language-java">public boolean equals(Object anObject)</code></pre>
+
+<p>and another function with the signature</p>
+
+<pre><code class="language-java">public boolean equalsIgnoreCase(String anotherString)</code></pre>
+
+<p>It seems as if the implementors of this class worked hard to find descriptive names for these generic parameters. But, almost by definition, generic entities have no descriptive names, and it is even more difficult to come up with consistent "descriptive" names for these.</p>
+
+<p>The alternative offered by the generic names technique</p>
+
+<pre><code class="language-java">public boolean equalsIgnoreCase(String anotherString) {
+  // ...
+}
+public int compareTo(String s) {
+  // ...
+}
+public int compareToIgnoreCase(String s) {
+  // ...
+}
+public boolean equals(Object o) {
+  // ...
+}
+public boolean equalsIgnoreCase(String s) {
+  // ...
+}</code></pre>
+
+<p>is more consistent. And, the choice of one letter names highlights the fact that the values with which the receiver <code>String</code> is compared are arbitrary.</p>
+
+<h2>Rules</h2>
+
+<p>In selecting generic names, apply the following rules:</p>
+
+<h3>Generic Variables Only</h3>
+
+<p><b>Generic names should never be used for non-generic. Do not apply the following rules to any of these.</b></p>
+
+<p>Consider for example the signature of function sendAnEmail</p>
+
+<pre class="code language-java">private static void sendEmail(
+  final String from, 
+  final List&lt;String> to, 
+  final String subject, 
+  final String body, 
+  final List&lt;File> attachments
+) throws Throwable {</pre>
+
+<p>Parameter <code>from</code> is a <code>String</code>, but it is not a generic string. The function is not designed to work if an arbitrary string is passed as its first parameter. Parameter <code>from</code> is intended to be a string representing a valid email address and accordingly follow specific formatting rules, and the choice of name reflects this intention. A generic name for this parameter is absolutely inappropriate.</p>
+
+<p>The same consideration applies to all other parameters of this function.</p>
+
+<h3>Small Scoped Variables Only</h3>
+
+<p><b>Terse names should never be used for variables defined in large scope</b></p>
+
+<p>The generic identifiers technique is inspired by the observation that many of the identifiers are visible only at a very limited scope. The application of other spartan programming techniques may make this scope even shorter. But, if for some reason a variable is visible in a large scope, using a generic name for it may confuse readers, sending them in a long journey of examining the variable's definition and all its uses.
+</p>
+
+<h3>Primitive Arithmetical Types</h3>
+
+<p><b>Generic names of variables of the primitive arithmetical types should follow the mathematical conventions suitable for the context.</b></p>
+
+<p>The primitive arithmetical types of Java are <code>byte</code>, <code>short</code>, <code>int</code>, <code>long</code>, <code>float</code> and <code>double</code>. C++ offers more such types, including <code>unsigned short</code>, <code>long long int</code>, <code>long double</code>. Generic variables of arithmetical types are often used in a mathematical context which suggests names for such variables.</p>
+
+<h4>Integral Primitive Types</h4>
+
+<p>Function positive in Class DBC uses the name n for a generic parameter of type <code>int</code></p>
+
+<pre><code class="language-java">/**
+* A possibly non-returning method to be used for checking integers which must be positive.
+*
+* @param n
+* a value which must be positive
+* @throws Bug.Assertion.Value.Numerical.Positive
+* in case n was nonpositive
+*/
+public static void positive(final int n) throws Bug.Assertion.Value.Numerical.Positive {
+  if (n &lt;= 0) 
+    throw new Bug.Assertion.Value.Numerical.Positive(n); 
+}</code></pre>
+
+<h4>Floating Point Type Example</h4>
+
+<p>The standard Java library, <code>java.lang.Math</code> includes a function to compute an angle from rectangular coordinates. This function reads</p>
+
+<pre><code class="language-java">/** ...
+* @param y the ordinate coordinate
+* @param x the abscissa coordinate
+* @return ...
+*/
+public static double atan2(double y, double x) {
+// ...
+}</code></pre>
+
+<h3>Non Arithmetical Primitive Types</h3>
+
+<p>There are only two non-arithmetical primitive types in Java: <code>char</code> and <code>boolean</code>.</p>
+
+<h4>Character Primitive Type</h4>
+
+<p>A generic variable of type <code>char</code> is usually denoted by <code>c</code> as in the following two functions, both drawn from the Java standard library implementation of the type <code>Character:</code></p>
+
+<pre><code class="language-java">/**
+* Returns a &lt;tt&gt;Character&lt;/tt&gt; instance representing the specified
+* &lt;tt&gt;char&lt;/tt&gt; value. ...
+* @param c a char value.
+* @return a &lt;tt&gt;Character&lt;/tt&gt; instance representing &lt;tt&gt;c&lt;/tt&gt;. ...
+*/
+public static Character valueOf(char c) {
+...
+}</code></pre>
+
+<pre><code class="language-java">/**
+* Returns a &lt;tt&gt;String&lt;/tt&gt; object representing the
+* specified &lt;tt&gt;char&lt;/tt&gt;. ...
+* @param c the &lt;tt&gt;char&lt;/tt&gt; to be converted...
+*/
+public static String toString(char c) {
+    return String.valueOf(c);
+}</code></pre>
+
+<h4>Boolean Primitive Type</h4>
+
+<p>Generic parameters of type <code>boolean</code> are not common. When they do show up, the generic names technique says that they should be named <code>b</code> as in the following example, drawn from the Java standard library implementation of the type <code>Boolean</code>:</p>
+
+<pre><code class="language-java">
+  /**
+  * Returns a &lt;tt&gt;Boolean&lt;/tt&gt; instance representing the specified
+  * &lt;tt&gt;boolean&lt;/tt&gt; value. ....
+  *
+  * @param b a boolean value.
+  * @return a &lt;tt&gt;Boolean&lt;/tt&gt; instance representing &lt;tt&gt;b&lt;/tt&gt;. ...
+  */
+  public static Boolean valueOf(boolean b) {
+  ...
+  }
+</code></pre>
+
+<h3>One-Word Reference Types</h3>
+
+<p><b>The name of an <em>instance</em> of a non-primitive type is the first letter of the type name, if the type name is a single word.</b></p>
+
+<p>Good type names consist of a single word. A generic instance of an instance of such a type is the first letter of the type name.</p>
+
+<p>For example, function sendMessage uses the generic name t for the generic variable of type Transport</p>
+
+<pre><code class="language-java">private static void sendMessage(final Message m, final Session s) {
+  final Transport t = s.getTransport("smtp");
+  t.connect(smtpServer, port, userName, password);
+  t.sendMessage(m, m.getAllRecipients());
+  t.close();
+}</code></pre>
+
+<h4>Multiple-Word Reference Types</h4>
+
+<p><b>The generic name of an <em>instance</em> of a non-primitive type whose name is comprised by several words is the lower cased acronym of the type name</b></p>
+
+<h5>Java String Example</h5>
+
+<p>The following function is offered by Java's standard implementation of the <code>String</code> datatype, that is <code>java.lang.String</code>. Notice that the generic parameter of type <code>StringBuffer</code> is named <code>sb</code>.</p>
+
+<pre><code class="language-java">/**
+* Compares this string to the specified {@code StringBuffer}...
+*
+* @param sb
+* The {@code StringBuffer} to compare this {@code String} against
+*
+* @return ...
+*/
+  public boolean contentEquals(StringBuffer sb) {
+    synchronized(sb) {
+    return contentEquals((CharSequence)sb);
+  }
+}</code></pre>
+
+<h3>Arrays and other Collections</h3>
